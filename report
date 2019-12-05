@@ -1,0 +1,64 @@
+-	list of all nodes in the cluster
+master-us-east-2b.masters.deploy.k8s.local:  3.15.156.111
+nodes.deploy.k8s.local:  3.17.141.34
+
+NODE STATUS
+NAME                                            ROLE    READY
+ip-172-20-37-197.us-east-2.compute.internal     node    True
+ip-172-20-40-111.us-east-2.compute.internal     master  True
+
+NAME                    ROLE    MACHINETYPE     MIN     MAX     SUBNETS
+master-us-east-2b       Master  t2.micro        1       1       us-east-2b
+nodes                              Node    t2.micro        1       1       us-east-2b
+
+-	list of all pods in all namespaces
+kubectl get pods --all-namespaces
+NAMESPACE     NAME                                                                  READY   STATUS    RESTARTS   AGE
+default       nginx-deployment-5754944d6c-pbtxz                                     1/1     Running   0          124m
+kube-system   dns-controller-796c995fdc-wz26d                                       1/1     Running   0          141m
+kube-system   etcd-manager-events-ip-172-20-40-111.us-east-2.compute.internal       1/1     Running   0          141m
+kube-system   etcd-manager-main-ip-172-20-40-111.us-east-2.compute.internal         1/1     Running   0          140m
+kube-system   kube-apiserver-ip-172-20-40-111.us-east-2.compute.internal            1/1     Running   2          140m
+kube-system   kube-controller-manager-ip-172-20-40-111.us-east-2.compute.internal   1/1     Running   0          140m
+kube-system   kube-dns-5fdb85bb5b-76n5h                                             3/3     Running   0          141m
+kube-system   kube-dns-5fdb85bb5b-c79tp                                             3/3     Running   0          140m
+kube-system   kube-dns-autoscaler-577b4774b5-l9fdx                                  1/1     Running   0          141m
+kube-system   kube-proxy-ip-172-20-37-197.us-east-2.compute.internal                1/1     Running   0          140m
+kube-system   kube-proxy-ip-172-20-40-111.us-east-2.compute.internal                1/1     Running   0          141m
+kube-system   kube-scheduler-ip-172-20-40-111.us-east-2.compute.internal            1/1     Running   0          140m
+
+
+-	kops configuration file
+export KOPS_CLUSTER_NAME=deploy.k8s.local
+--node-count=1 \
+--node-size=t2.micro \
+--master-size=t2.micro \
+--zones=us-east-2b \
+--name=${KOPS_CLUSTER_NAME}
+Я делал не файлом, а отдельными командами
+
+Deployment
+
+-	Provide yml file for deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+
+
+
